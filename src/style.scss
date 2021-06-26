@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    overscroll-behavior-y: none;
+}
+
+.json-container {
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6em;
+    font-family: monospace;
+    padding: 1em;
+    padding-left: 2.5em;
+    display: block;
+    box-sizing: border-box;
+    &.light {
+        color: #333;
+        .number {
+            color: #095982; /* Better color for numbers? */
+        }
+        .null {
+            color: #B20002;
+        }
+        .boolean {
+            color: #568C3B;
+        }
+        .string {
+            color: #257FAD;
+        }
+        .line {
+            background: #c1c1c1;
+        }
+        .toggle {
+            fill: #b1b1b1;
+            &:hover {
+                fill: #949494;
+            }
+        }
+    }
+    &.dark {
+        background-color: #1D1D1F;
+        color: #F5F6F7;
+        .number .value {
+            color: #AED0A4; /* Better color for numbers? */
+        }
+        .null .value {
+            color: #B20002;
+        }
+        .boolean .value {
+            color: #AED0A4;
+        }
+        .string .value {
+            color: #8ADDFF;
+        }
+        .line {
+            border-color: #48484A;
+            &:hover {
+                border-color: lighten(#48484A, 20%);
+            }
+        }
+        .toggle {
+            fill: #8D8D8D;
+        }
+        .property:hover .toggle {
+            fill: lighten(#8D8D8D, 20%);
+        }
+    }
+}
+
+.property {
+    position: relative;
+}
+
+.object, .array {
+    > .property {
+        cursor: pointer;
+    }
+}
+
+.line {
+    width: 1px;
+    padding: 0 5px;
+    position: absolute;
+    top: 30px;
+    bottom: 30px;
+    z-index: 1;
+    border-left: 1px solid;
+}
+
+.toggle {
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    left: -1em;
+    top: 4px;
+    cursor: pointer;
+    transition: .1s transform;
+    &.collapsed {
+        transform: rotate(-90deg) translate(0, -2px)
+    }
+}
+
+.node {
+    display: block;
+    position: relative;
+    &.array, &.object {
+        &.collapsed {
+            .value {
+                display: none;
+            }
+            > .property::after {
+                content: '...';
+                font-size: .8em;
+            }
+        }
+    }
+}
+
+.boolean, .null, .number {
+    .value {
+        font-weight: bold;
+    }
+}
