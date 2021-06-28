@@ -1,7 +1,7 @@
 import React, {useState, memo} from "react"
 import './style.scss'
-import example from './example.json';
-// import example from './huge.json';
+// import example from './example.json';
+import example from './huge.json';
 
 const brackets = {
   'object': [<>&#123;</>, <>&#125;</>],
@@ -27,82 +27,95 @@ const Toggle = memo(({expanded}) => {
   )
 })
 
-const Primitive = memo(({value, type}) => type === 'string' ? <span>"{value}"</span> : <span>{String(value)}</span>)
+const Primitive = memo(({property, value, type, level, addComma}) => {
+  return (
+  <span className={`node ${type}`} title={type}>
+    {level > 0 && <span dangerouslySetInnerHTML={addIndent(level)} />}
+    {property && <span className="property"><span>"{property}"</span>: </span>}
+    <span className="value">
+      {type === 'string' ? <span>"{value}"</span> : <span>{String(value)}</span>}
+    </span>
+    {addComma && ','} 
+  </span>
+)})
 
-const Collection = memo(({value, type, level = 0}) => {  
-  let result = []
-
-  if(type === 'array') {
-    if(value.length === 0) return null
-
-    for(let i = 0; i < value.length; i++) {
-      result.push(<Node key={`${level}-${i}`} value={value[i]} level={level + 1} addComma={i !== value.length - 1} />)
-    }
-  } else {
-    let properties = Object.getOwnPropertyNames(value)
-    
-    if(properties.length === 0) return null
-
-    for(let i = 0; i < properties.length; i++) {
-      result.push(<Node key={`${level}-${i}`} property={properties[i]} value={value[properties[i]]} level={level + 1} addComma={i !== properties.length - 1} />)
-    }
-  }
-
-  return result
-})
-
-const hash = {
-  'string': Primitive,
-  'number': Primitive,
-  'boolean': Primitive,
-  'null': Primitive,
-  'array': Collection,
-  'object': Collection
-}
-
-const Node = memo(({property, value, level = 0, addComma = true}) => {
-  let type = typeof value
-
-  if(Array.isArray(value)) type = 'array'
-  if(null === value) type = 'null'
-
-  const isCollection = (type === 'array' || type === 'object')
-
+const Collection = memo(({property = null, value, type = 'object', level = 0, addComma = true}) => {
   const [expanded, setExpanded] = useState(level < 5) // Auto collapse deeper levels
 
-  const Value = hash[type]
-
-  const toggleExpanded = () => {
-    if(isCollection) setExpanded(!expanded)
-  }
+  const toggleExpanded = () => setExpanded(!expanded)
 
   const indent = addIndent(level)
 
-  return (
-    <span className={expanded ? `node ${type}` : `collapsed node ${type}`} title={type}>
+  // Get values to iterate over collection
+  const iterable = ('array' === type) ? value : Object.getOwnPropertyNames(value)
+
+  if(iterable.length === 0) return (
+    <span className={`node empty ${type}`}>
       {level > 0 && <span dangerouslySetInnerHTML={indent} />}
-      {isCollection && expanded && <span className="line" onClick={toggleExpanded} style={{left: (level * 2.4) + .2 + `em`}} />}
+      <span className="property">
+        {property && <span>"{property}": </span>}
+        {brackets[type][0]}
+        {brackets[type][1]}
+      </span>
+    </span>
+  )
+
+  let result = []
+
+  if(type === 'array') {
+    for(let i = 0; i < iterable.length; i++) {
+      let childValue = iterable[i]
+      let childType = typeof childValue
+
+      if(Array.isArray(childValue)) childType = 'array'
+      
+      if(null === childValue) childType = 'null'
+
+      const ChildNode = (childType === 'array' || childType === 'object') ? Collection : Primitive
+
+      result.push(<ChildNode key={`${level}-${i}`} value={childValue} level={level + 1} type={childType} addComma={i !== iterable.length - 1} />)
+    }
+  } else {
+    for(let i = 0; i < iterable.length; i++) {
+      let childValue = value[iterable[i]]
+      let childType = typeof childValue
+
+      if(Array.isArray(childValue)) childType = 'array'
+      
+      if(null === childValue) childType = 'null'
+
+      const ChildNode = (childType === 'array' || childType === 'object') ? Collection : Primitive
+
+      result.push(<ChildNode key={`${level}-${i}`} property={iterable[i]} value={childValue} level={level + 1} type={childType} addComma={i !== iterable.length - 1} />)
+    }
+  }
+
+  return (
+    <span className={expanded ? `node ${type}` : `collapsed node ${type}`} onClick={() => {if(!expanded) toggleExpanded()}} title={type}>
+      {level > 0 && <span dangerouslySetInnerHTML={indent} />}
+      {expanded && <span className="line" onClick={toggleExpanded} style={{left: (level * 2) + .2 + `em`}} />}
       <span className="property" onClick={toggleExpanded}>
-        {isCollection && <Toggle expanded={expanded} />}
-        {property && `"${property}": `}
-        {isCollection && brackets[type][0]}
+        {<Toggle expanded={expanded} />}
+        {property && <span>"{property}"</span>}
+        {property && `: `}
+        {brackets[type][0]}
       </span>
       <span className="value">
-        <Value value={value} type={type} level={level} />
+        {result}
       </span>
-      {isCollection && expanded && <span dangerouslySetInnerHTML={indent} />}
-      {isCollection && brackets[type][1]}
+      {expanded && <span dangerouslySetInnerHTML={indent} />}
+      {<span onClick={toggleExpanded} className='close-bracket'>{brackets[type][1]}</span>}
       {addComma && ','}
     </span>
   )
 })
 
-export default function() {
+export default memo(function() {
   const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
   return (
     <div className={`json-container ${theme}`}>
-        <Node value={example} addComma={false} />
+        <Collection value={example} addComma={false} />
     </div>
   )
-}
+})

@@ -5,51 +5,56 @@ body {
 
 .json-container {
     min-height: 100vh;
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.6em;
-    font-family: monospace;
+    font-family: 'Ubuntu Mono', monospace;
+    -webkit-font-smoothing: antialiased;
     padding: 1em;
     padding-left: 2.5em;
     display: block;
     box-sizing: border-box;
     &.light {
         color: #333;
-        .number {
-            color: #095982; /* Better color for numbers? */
+        .property span {
+            color: #004FAB;
         }
-        .null {
+        .string .value {
             color: #B20002;
         }
-        .boolean {
-            color: #568C3B;
+        .number .value {
+            color: #008954;
         }
-        .string {
-            color: #257FAD;
+        .boolean .value, .null .value {
+            color: #2000FF;
         }
         .line {
-            background: #c1c1c1;
+            border-color: #c1c1c1;
+            &:hover {
+                border-color: darken(#c1c1c1, 20%);
+            }
         }
         .toggle {
             fill: #b1b1b1;
-            &:hover {
-                fill: #949494;
-            }
+        }
+        .node.collapsed:hover .toggle,
+        .property:hover .toggle {
+            fill: darken(#b1b1b1, 20%);
         }
     }
     &.dark {
-        background-color: #1D1D1F;
+        background-color: #202124;
         color: #F5F6F7;
-        .number .value {
-            color: #AED0A4; /* Better color for numbers? */
-        }
-        .null .value {
-            color: #B20002;
-        }
-        .boolean .value {
-            color: #AED0A4;
+        .property span {
+            color: #8ADDFF;
         }
         .string .value {
-            color: #8ADDFF;
+            color: #D88E73;
+        }
+        .number .value {
+            color: #AED0A4;
+        }
+        .boolean .value, .null .value {
+            color: #3D9CDB;
         }
         .line {
             border-color: #48484A;
@@ -60,6 +65,7 @@ body {
         .toggle {
             fill: #8D8D8D;
         }
+        .node.collapsed:hover .toggle,
         .property:hover .toggle {
             fill: lighten(#8D8D8D, 20%);
         }
@@ -74,6 +80,9 @@ body {
     > .property {
         cursor: pointer;
     }
+    &.empty > .property {
+        cursor: text;
+    }
 }
 
 .line {
@@ -86,11 +95,15 @@ body {
     border-left: 1px solid;
 }
 
+.close-bracket {
+    cursor: pointer;
+}
+
 .toggle {
     height: 10px;
     width: 10px;
     position: absolute;
-    left: -1em;
+    left: -.8em;
     top: 4px;
     cursor: pointer;
     transition: .1s transform;
@@ -101,9 +114,14 @@ body {
 
 .node {
     display: block;
+    width: fit-content;
     position: relative;
+    + .node {
+        margin-top: .2em;
+    }
     &.array, &.object {
         &.collapsed {
+            cursor: pointer;
             .value {
                 display: none;
             }
@@ -112,11 +130,5 @@ body {
                 font-size: .8em;
             }
         }
-    }
-}
-
-.boolean, .null, .number {
-    .value {
-        font-weight: bold;
     }
 }
