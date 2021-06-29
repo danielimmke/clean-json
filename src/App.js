@@ -1,7 +1,7 @@
 import React, {useState, memo} from "react"
 import './style.scss'
-// import example from './example.json';
-import example from './huge.json';
+import example from './example.json';
+// import example from './huge.json';
 
 const brackets = {
   'object': [<>&#123;</>, <>&#125;</>],
@@ -111,10 +111,8 @@ const Collection = memo(({property = null, value, type = 'object', level = 0, ad
 })
 
 export default memo(function() {
-  const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-
   return (
-    <div className={`json-container ${theme}`}>
+    <div className="json-container">
         <Collection value={example} addComma={false} />
     </div>
   )

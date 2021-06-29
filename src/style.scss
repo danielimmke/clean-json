@@ -3,6 +3,40 @@ body {
     overscroll-behavior-y: none;
 }
 
+@media (prefers-color-scheme: dark) {
+    html {
+        background-color: #202124;
+        .json-container {
+            color: #F5F6F7;
+            .property span {
+                color: #8ADDFF;
+            }
+            .string .value {
+                color: #D88E73;
+            }
+            .number .value {
+                color: #AED0A4;
+            }
+            .boolean .value, .null .value {
+                color: #3D9CDB;
+            }
+            .line {
+                border-color: #48484A;
+                &:hover {
+                    border-color: lighten(#48484A, 20%);
+                }
+            }
+            .toggle {
+                fill: #8D8D8D;
+            }
+            .node.collapsed:hover .toggle,
+            .property:hover .toggle {
+                fill: lighten(#8D8D8D, 20%);
+            }
+        }
+    }
+}
+
 .json-container {
     min-height: 100vh;
     font-size: 17px;
@@ -13,62 +47,31 @@ body {
     padding-left: 2.5em;
     display: block;
     box-sizing: border-box;
-    &.light {
-        color: #333;
-        .property span {
-            color: #004FAB;
-        }
-        .string .value {
-            color: #B20002;
-        }
-        .number .value {
-            color: #008954;
-        }
-        .boolean .value, .null .value {
-            color: #2000FF;
-        }
-        .line {
-            border-color: #c1c1c1;
-            &:hover {
-                border-color: darken(#c1c1c1, 20%);
-            }
-        }
-        .toggle {
-            fill: #b1b1b1;
-        }
-        .node.collapsed:hover .toggle,
-        .property:hover .toggle {
-            fill: darken(#b1b1b1, 20%);
+    color: #333;
+    .property span {
+        color: #004FAB;
+    }
+    .string .value {
+        color: #B20002;
+    }
+    .number .value {
+        color: #008954;
+    }
+    .boolean .value, .null .value {
+        color: #2000FF;
+    }
+    .line {
+        border-color: #c1c1c1;
+        &:hover {
+            border-color: darken(#c1c1c1, 20%);
         }
     }
-    &.dark {
-        background-color: #202124;
-        color: #F5F6F7;
-        .property span {
-            color: #8ADDFF;
-        }
-        .string .value {
-            color: #D88E73;
-        }
-        .number .value {
-            color: #AED0A4;
-        }
-        .boolean .value, .null .value {
-            color: #3D9CDB;
-        }
-        .line {
-            border-color: #48484A;
-            &:hover {
-                border-color: lighten(#48484A, 20%);
-            }
-        }
-        .toggle {
-            fill: #8D8D8D;
-        }
-        .node.collapsed:hover .toggle,
-        .property:hover .toggle {
-            fill: lighten(#8D8D8D, 20%);
-        }
+    .toggle {
+        fill: #b1b1b1;
+    }
+    .node.collapsed:hover .toggle,
+    .property:hover .toggle {
+        fill: darken(#b1b1b1, 20%);
     }
 }
 
